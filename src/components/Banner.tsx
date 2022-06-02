@@ -5,7 +5,7 @@ import _12 from "../img/12.jpg";
 function Banner() {
   const [firstImage, setFirstImage] = useState(_12);
   const [secondImage, setSecondImage] = useState(_11);
-  const changeImage = (image) => {
+  const changeImage = (image: number) => {
     switch (image) {
       case 1:
         setFirstImage(require("../img/12.jpg"));
@@ -34,7 +34,6 @@ function Banner() {
     }, 10000);
   }, []);
 
-  // TODO: fix setInterval
   return (
     <div className="banner-element">
       <div className="image">
