@@ -2,6 +2,10 @@
   --gaminggreen :#8fbf00
 }
 
+body {
+  position: relative;
+}
+
 .top-nav,
 footer {
   background-color: var(--gaminggreen);
@@ -135,13 +139,8 @@ footer a:hover {
 #first-banner,
 #second-banner {
  height: 350px;
- /* animation: fadeIn 1s; */
 }
 
-/* @keyframes fadeIn {
-  0% {opacity:0;}
-  100% {opacity:1;}
-} */
 
 .control {
   width: 65px;
@@ -173,8 +172,9 @@ footer a:hover {
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
-  margin: 1rem 0;
   position: relative;
+  width: 1140px;
+  margin: 1rem auto;
 }
 
 .searchfield::before, .searchfield::after {
@@ -185,7 +185,7 @@ footer a:hover {
 }
 
 #search-input {
-  width: 400px;
+  width: 25%;
   height: 50px;
   line-height: 40px;
   font-size: 35px;
@@ -200,7 +200,6 @@ footer a:hover {
 }
 
 #search-btn {
-  margin: 0 20px ;
   height: 50px;
   background-color: white;
   font-size: 30px;
@@ -220,7 +219,6 @@ footer a:hover {
   background-color: white;
   position: absolute;
   top: 50px;
-  transform: translateX(-50px);
   z-index: 99;
   border: 1px solid darkgray;
   border-radius: 5px;
@@ -234,3 +232,52 @@ footer a:hover {
 .single-search-result hr {
   width: 80%;
 }
+
+.game-grid {
+  width: 1140px;
+  margin: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between
+}
+
+.gamebox {
+  width: 370px;
+  height: 175px;
+  background-color: aquamarine;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+.gamebox img{
+  width: 370px;
+  height: 175px;
+  object-fit: cover;
+}
+
+/* .loading {
+  background-color: #2d2d2d99;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 199;
+}
+
+.loader {
+  border: 16px solid #f3f3f3; 
+  border-top: 16px solid var(--gaminggreen); 
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+  position: relative;
+  height: 50px;
+  width: 50px;
+  top: 50vh;
+  left: 50vw;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+} */

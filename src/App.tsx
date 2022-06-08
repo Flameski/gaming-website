@@ -1,6 +1,7 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 import './App.css';
 import Banner from './components/Banner';
+import Gamebox from './components/Gamebox';
 import data from './data'
 
 function App() {
@@ -8,11 +9,16 @@ function App() {
   const [searchGames, setSearchGames] = useState(['']);
   const [searchResultsVisible,setSearchResultsVisible] = useState(false);
   const inputBox = useRef<HTMLInputElement>(null);
+
+  const [randomGamesState, setRandomGamesState] = useState<any[]>([]);
   const searchGame = (text:string) => {
+    // TODO: best to rework this to use IDs instead of names
     if(text) {
-      data.forEach((element) => {
-        if(element.gameName.toLowerCase() === text.toLowerCase()) {
-          getGameInfo(element.id);
+      data.forEach(async (element) => {
+        let elementA = element.gameName.replace("’",";").toLowerCase();
+        let elementB = text.replace("’",";").toLowerCase();
+        if(elementA === elementB) {
+          console.log(await getGameInfo(element.id));
         }
       })
     }
@@ -32,15 +38,36 @@ function App() {
     }
   }
 
+  useEffect(()=>{
+    let arrayOfRandomGameIDs:number[] = [];
+    while(arrayOfRandomGameIDs.length < 9) {
+      let randomGameID = Math.ceil((Math.random() * data.length))
+      if(data[randomGameID].id in arrayOfRandomGameIDs) return;
+      arrayOfRandomGameIDs.push(data[randomGameID].id) 
+    };
+
+    console.log(arrayOfRandomGameIDs);
+    
+    for(const gameId of arrayOfRandomGameIDs) {
+      (async ()=> {
+        let randomGame = await getGameInfo(gameId);
+        setRandomGamesState(randomGamesState => [...randomGamesState, randomGame])
+      })()     
+    }
+    
+  },[])
+
+  
+
   async function getGameInfo(gameId: number) {
     const gameInfo = await fetch(`https://api.gog.com/v2/games/${gameId}`);
     const gameInfoAsJson = await gameInfo.json()
-    const title = gameInfoAsJson._embedded.product.title;
-    console.log(title);
+    return gameInfoAsJson;
   }
 
   return (
     <>
+    {/* {isLoading && <div className="loading"><div className="loader"></div></div>} */}
       <section className='top-nav'>
         <div className="top-nav-items">
           <ul>
@@ -85,6 +112,13 @@ function App() {
                 )
               })}
           </div>}
+      </section>
+      <section className="game-grid">
+        {randomGamesState.map((el, index)=> {          
+          return (
+            <Gamebox {...el} onClick={searchGame} key={index} />
+          )
+        })}
       </section>
     </main>
     <footer>Design by <a href="http://w3layouts.com/">W3layouts</a></footer>
