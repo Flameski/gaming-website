@@ -3,7 +3,7 @@ function Gamebox(props: any) {
     imageHref = imageHref.slice(0, -15) + '800.png'
     
   return (
-    <div className="gamebox" onClick={()=>{props.onClick(props._embedded.product.title)}}>
+    <div className="gamebox" onClick={()=>{props.onClick(props._embedded.product.id)}}>
         <img src={imageHref} alt="Game" />
     </div>
   )

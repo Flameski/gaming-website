@@ -1,29 +1,56 @@
-import { useRef, useState, useEffect, useCallback } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import './App.css';
 import Banner from './components/Banner';
 import Gamebox from './components/Gamebox';
+import GameInfoBox from './components/GameInfoBox';
 import data from './data'
+import { Game } from './interfaces';
 
 function App() {
   const [searchText, setSearchText] = useState('');
   const [searchGames, setSearchGames] = useState(['']);
   const [searchResultsVisible,setSearchResultsVisible] = useState(false);
   const inputBox = useRef<HTMLInputElement>(null);
+  const [gameDetails, setGameDetails] = useState<Game>();
+  const [showGameInfo, setShowGameInfo] = useState(false);
 
   const [randomGamesState, setRandomGamesState] = useState<any[]>([]);
-  const searchGame = (text:string) => {
-    // TODO: best to rework this to use IDs instead of names
-    if(text) {
-      data.forEach(async (element) => {
-        let elementA = element.gameName.replace("’",";").toLowerCase();
-        let elementB = text.replace("’",";").toLowerCase();
-        if(elementA === elementB) {
-          console.log(await getGameInfo(element.id));
-        }
-      })
-    }
+  const searchGame = async (id:number) => {
+    let response = await getGameInfo(id);
+    let title:string = response._embedded.product.title;
+    let img = response._embedded.product._links.image.href;
+    img = img.replace('{formatter}', '800');
+    let description = response.description;
+    let gameTags = response._embedded.tags;
+    let tags: string[] = [];
+    gameTags.forEach((tag: { name: string; }) => {
+      tags.push(tag.name);
+    });
+    let gameScreenshots = response._embedded.screenshots;
+    let screenshots: string[]  = [];
+    gameScreenshots.forEach((sc: any) => {
+      screenshots.push(sc._links.self.href)
+    });
+    setGameDetails({
+      title,
+      img,
+      description,
+      tags,
+      screenshots
+    })
+    setShowGameInfo(true)
   }
+
+  const parseTextSearch = (text: string) => {
+    data.forEach((game) => {
+      if(game.gameName === text) {
+        searchGame(game.id)
+      }
+    })
+  }
+
   const showListOfGames = (text:string) => {
+    // shows the dropdown of game suggestions for the search box
     setSearchText(text);
     setSearchResultsVisible(text.length > 2)
     if(text.length > 2) {
@@ -39,6 +66,7 @@ function App() {
   }
 
   useEffect(()=>{
+    // gets 9 random games to fill the home screen
     let arrayOfRandomGameIDs:number[] = [];
     while(arrayOfRandomGameIDs.length < 9) {
       let randomGameID = Math.ceil((Math.random() * data.length))
@@ -46,7 +74,6 @@ function App() {
       arrayOfRandomGameIDs.push(data[randomGameID].id) 
     };
 
-    console.log(arrayOfRandomGameIDs);
     
     for(const gameId of arrayOfRandomGameIDs) {
       (async ()=> {
@@ -68,6 +95,7 @@ function App() {
   return (
     <>
     {/* {isLoading && <div className="loading"><div className="loader"></div></div>} */}
+    {/* unused loading screen */}
       <section className='top-nav'>
         <div className="top-nav-items">
           <ul>
@@ -100,7 +128,7 @@ function App() {
     <main>
       <section className='searchfield'>
           <input type="search" name="search" id="search-input" placeholder='Search for a game' value={searchText} ref={inputBox} onChange={(e) => {showListOfGames(e.target.value)}}/>
-          <button id='search-btn' onClick={() => {searchGame(inputBox.current?.value as string)}}>Search</button>
+          <button id='search-btn' onClick={() => {parseTextSearch(inputBox.current!.value)}}>Search</button>
           { searchResultsVisible &&
           <div className="search-results">
             {searchGames.slice(0,5).map((el, index) => {
@@ -113,13 +141,16 @@ function App() {
               })}
           </div>}
       </section>
-      <section className="game-grid">
+      {showGameInfo ?
+      <GameInfoBox {...gameDetails!} />
+       :
+       <section className="game-grid">
         {randomGamesState.map((el, index)=> {          
           return (
             <Gamebox {...el} onClick={searchGame} key={index} />
           )
         })}
-      </section>
+      </section>}
     </main>
     <footer>Design by <a href="http://w3layouts.com/">W3layouts</a></footer>
     </>

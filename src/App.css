@@ -281,3 +281,18 @@ footer a:hover {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 } */
+
+.game-info-box {
+  width: 1140px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.game-info-box * {
+  margin:20px auto;
+}
+
+.game-info-box .screenshots img {
+  margin: 20px;
+}
